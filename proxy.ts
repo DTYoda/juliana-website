@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 const ADMIN_COOKIE = "admin_auth";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow the login page itself to load
@@ -34,4 +34,5 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/admin/:path*"],
 };
+
 

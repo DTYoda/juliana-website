@@ -4,8 +4,6 @@ const turndownService = new TurndownService({
   headingStyle: "atx",
   codeBlockStyle: "fenced",
   bulletListMarker: "-",
-  // Preserve whitespace in code blocks
-  codeBlockStyle: "fenced",
 });
 
 // Configure turndown to preserve formatting
@@ -116,7 +114,7 @@ function jsonToMarkdown(node: any, listIndent: number = 0): string {
             return bulletIndent + "  " + line.trimStart();
           }
         }).join("\n");
-      }).filter(item => item.trim()).join("\n"); // Join with single newline, no blank lines
+      }).filter((item: string) => item.trim()).join("\n"); // Join with single newline, no blank lines
       return bulletItems + "\n";
 
     case "orderedList":
@@ -154,7 +152,7 @@ function jsonToMarkdown(node: any, listIndent: number = 0): string {
             return orderedIndent + "  " + line.trimStart();
           }
         }).join("\n");
-      }).filter(item => item.trim()).join("\n"); // Join with single newline, no blank lines
+      }).filter((item: string) => item.trim()).join("\n"); // Join with single newline, no blank lines
       return orderedItems + "\n";
 
     case "listItem":

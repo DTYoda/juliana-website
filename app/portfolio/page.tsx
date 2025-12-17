@@ -2,8 +2,7 @@ import Link from "next/link";
 import { getPosts } from "@/lib/markdown";
 import { format } from "date-fns";
 import AnimatedSection from "@/components/AnimatedSection";
-import { readFile } from "fs/promises";
-import { join } from "path";
+import { getWebsiteContent } from "@/lib/postgres-website-content";
 
 interface WebsiteContent {
   portfolio: {
@@ -12,24 +11,8 @@ interface WebsiteContent {
   };
 }
 
-async function getWebsiteContent(): Promise<WebsiteContent> {
-  try {
-    const contentFile = join(process.cwd(), "content", "website-content.json");
-    const content = await readFile(contentFile, "utf-8");
-    const parsed = JSON.parse(content);
-    return { portfolio: parsed.portfolio };
-  } catch (error) {
-    return {
-      portfolio: {
-        title: "Writing Portfolio",
-        description: "A collection of my stories and creative writing pieces",
-      },
-    };
-  }
-}
-
 export default async function Portfolio() {
-  const stories = getPosts("stories");
+  const stories = await getPosts("stories");
   const websiteContent = await getWebsiteContent();
 
   return (

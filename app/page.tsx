@@ -3,92 +3,12 @@ import { getPosts } from "@/lib/markdown";
 import { format } from "date-fns";
 import AnimatedSection from "@/components/AnimatedSection";
 import Image from "next/image";
-import { readFile } from "fs/promises";
-import { join } from "path";
+import { getWebsiteContent, type WebsiteContent } from "@/lib/postgres-website-content";
 
-interface WebsiteContent {
-  home: {
-    name: string;
-    title: string;
-    quote: string;
-    description1: string;
-    description2: string;
-    bannerImage: string;
-    profileImage: string;
-    aboutPreviewTitle: string;
-    aboutPreviewText: string;
-    aboutPreviewButtonText: string;
-    navbarTitle: string;
-  };
-  about: {
-    title: string;
-    navbarTitle: string;
-    content: string[];
-    galleryTitle: string;
-    galleryImages: string[];
-  };
-  portfolio: {
-    title: string;
-    description: string;
-    navbarTitle: string;
-  };
-  blog: {
-    title: string;
-    description: string;
-    navbarTitle: string;
-  };
-}
-
-async function getWebsiteContent(): Promise<WebsiteContent> {
-  try {
-    const contentFile = join(process.cwd(), "content", "website-content.json");
-    const content = await readFile(contentFile, "utf-8");
-    return JSON.parse(content);
-  } catch (error) {
-    // Return default content if file doesn't exist
-    return {
-      home: {
-        name: "Juliana",
-        title: "Writer & Storyteller",
-        quote:
-          "Every story is a journey, and every word is a step closer to understanding the beauty of life.",
-        description1:
-          "Welcome to my little corner of the internet, where I share the stories that live in my heart and the thoughts that dance through my mind. I believe in the power of words to connect, heal, and inspire.",
-        description2:
-          "Here you'll find a collection of my creative writing, personal reflections, and the moments that have shaped me as a writer and as a person. Thank you for joining me on this journey.",
-        bannerImage: "/banner.JPG",
-        profileImage: "/profile.jpeg",
-        aboutPreviewTitle: "About Me",
-        aboutPreviewText:
-          "I'm a writer who finds joy in crafting stories that touch the heart and spark the imagination. Through my words, I explore the beauty of everyday moments and the magic that exists in the ordinary.",
-        aboutPreviewButtonText: "Read More About Me",
-        navbarTitle: "Home",
-      },
-      about: {
-        title: "About Me",
-        navbarTitle: "About",
-        content: [],
-        galleryTitle: "A Glimpse Into My World",
-        galleryImages: [],
-      },
-      portfolio: {
-        title: "Writing Portfolio",
-        description: "A collection of my stories and creative writing pieces",
-        navbarTitle: "Portfolio",
-      },
-      blog: {
-        title: "Blog",
-        description:
-          "Thoughts, reflections, and musings from my writing journey",
-        navbarTitle: "Blog",
-      },
-    };
-  }
-}
 
 export default async function Home() {
-  const recentStories = getPosts("stories").slice(0, 3);
-  const recentBlogs = getPosts("blogs").slice(0, 3);
+  const recentStories = (await getPosts("stories")).slice(0, 3);
+  const recentBlogs = (await getPosts("blogs")).slice(0, 3);
   const websiteContent = await getWebsiteContent();
 
   return (

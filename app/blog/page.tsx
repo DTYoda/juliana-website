@@ -2,8 +2,7 @@ import Link from "next/link";
 import { getPosts } from "@/lib/markdown";
 import { format } from "date-fns";
 import AnimatedSection from "@/components/AnimatedSection";
-import { readFile } from "fs/promises";
-import { join } from "path";
+import { getWebsiteContent } from "@/lib/postgres-website-content";
 
 interface WebsiteContent {
   blog: {
@@ -12,25 +11,8 @@ interface WebsiteContent {
   };
 }
 
-async function getWebsiteContent(): Promise<WebsiteContent> {
-  try {
-    const contentFile = join(process.cwd(), "content", "website-content.json");
-    const content = await readFile(contentFile, "utf-8");
-    const parsed = JSON.parse(content);
-    return { blog: parsed.blog };
-  } catch (error) {
-    return {
-      blog: {
-        title: "Blog",
-        description:
-          "Thoughts, reflections, and musings from my writing journey",
-      },
-    };
-  }
-}
-
 export default async function Blog() {
-  const blogs = getPosts("blogs");
+  const blogs = await getPosts("blogs");
   const websiteContent = await getWebsiteContent();
 
   return (

@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
 export async function generateStaticParams() {
-  const blogs = getPosts('blogs');
+  const blogs = await getPosts('blogs');
   return blogs.map((blog) => ({
     slug: blog.slug,
   }));

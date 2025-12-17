@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
   }
 
-  const posts = getPosts(type);
+  const posts = await getPosts(type);
   return NextResponse.json(posts);
 }
 
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     const slug = slugify(title);
-    savePost(type, slug, title, content, date, excerpt, image);
+    await savePost(type, slug, title, content, date, excerpt, image);
 
     return NextResponse.json({ success: true, slug });
   } catch (error) {
@@ -56,7 +56,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
     }
 
-    deletePost(type, slug);
+    await deletePost(type, slug);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(

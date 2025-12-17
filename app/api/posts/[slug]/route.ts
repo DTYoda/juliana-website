@@ -45,13 +45,13 @@ export async function PUT(
 
     const newSlug = slugify(title);
     
-    // If slug changed, we need to delete the old file and create a new one
+    // If slug changed, we need to delete the old post and create a new one
     if (oldSlug !== newSlug) {
       const { deletePost } = await import('@/lib/markdown');
-      deletePost(type, oldSlug);
+      await deletePost(type, oldSlug);
     }
 
-    savePost(type, newSlug, title, content, date, excerpt, image);
+    await savePost(type, newSlug, title, content, date, excerpt, image);
 
     return NextResponse.json({ success: true, slug: newSlug });
   } catch (error) {

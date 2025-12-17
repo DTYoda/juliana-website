@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readFile, writeFile } from "fs/promises";
-import { join } from "path";
-
-const CONTENT_FILE = join(process.cwd(), "content", "website-content.json");
+import { getWebsiteContent, saveWebsiteContent } from "@/lib/postgres-website-content";
 
 export async function GET() {
   try {
-    const content = await readFile(CONTENT_FILE, "utf-8");
-    return NextResponse.json(JSON.parse(content));
+    const content = await getWebsiteContent();
+    return NextResponse.json(content);
   } catch (error) {
     console.error("Error reading website content:", error);
     return NextResponse.json(
@@ -29,8 +26,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Write to file
-    await writeFile(CONTENT_FILE, JSON.stringify(body, null, 2), "utf-8");
+    // Save to KV
+    await saveWebsiteContent(body);
     
     return NextResponse.json({ success: true });
   } catch (error) {

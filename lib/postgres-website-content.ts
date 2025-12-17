@@ -86,13 +86,15 @@ export async function getWebsiteContent(): Promise<WebsiteContent> {
       FROM website_content
       WHERE id = 1
       LIMIT 1
-    `;
+    ` as Array<{
+      content: WebsiteContent;
+    }>;
     
     if (result.length === 0) {
       return DEFAULT_CONTENT;
     }
     
-    return result[0].content as WebsiteContent;
+    return result[0].content;
   } catch (error) {
     console.error('Error getting website content from Postgres:', error);
     return DEFAULT_CONTENT;

@@ -24,9 +24,16 @@ export async function getPosts(type: 'stories' | 'blogs'): Promise<Post[]> {
       FROM posts
       WHERE type = ${type}
       ORDER BY date DESC
-    `;
+    ` as Array<{
+      slug: string;
+      title: string;
+      content: string;
+      date: string;
+      excerpt: string | null;
+      image: string | null;
+    }>;
     
-    return posts.map((post: any) => ({
+    return posts.map((post) => ({
       slug: post.slug,
       title: post.title,
       content: post.content,
@@ -51,13 +58,20 @@ export async function getPostBySlug(
       FROM posts
       WHERE type = ${type} AND slug = ${slug}
       LIMIT 1
-    `;
+    ` as Array<{
+      slug: string;
+      title: string;
+      content: string;
+      date: string;
+      excerpt: string | null;
+      image: string | null;
+    }>;
     
     if (result.length === 0) {
       return null;
     }
     
-    const post = result[0] as any;
+    const post = result[0];
     
     // Process markdown to HTML - use rehype pipeline to allow HTML tags like <br>
     const processedContent = await remark()

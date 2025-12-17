@@ -1,26 +1,419 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fef9f6;
+  --foreground: #2d1b1a;
+  --cyan-accent: #06b6d4;
+  --cyan-light: #a5f3fc;
+  --rose-light: #fecdd3;
+  --rose-medium: #e11d48;
+  --text-primary: #2d1b1a;
+  --text-secondary: #5a3d38;
+  --text-accent: #0891b2;
+}
+
+.dark {
+  --background: #1a1a1a;
+  --foreground: #e5e5e5;
+  --cyan-accent: #22d3ee;
+  --cyan-light: #0891b2;
+  --rose-light: #be185d;
+  --rose-medium: #f43f5e;
+  --text-primary: #e5e5e5;
+  --text-secondary: #a3a3a3;
+  --text-accent: #22d3ee;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-inter);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-playfair), serif;
+}
+
+/* Cozy, feminine styling */
+.prose {
+  max-width: 65ch;
+}
+
+.prose h1,
+.prose h2,
+.prose h3 {
+  color: #1a1a1a;
+  font-weight: 600;
+  margin-top: 2em;
+  margin-bottom: 1em;
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3 {
+  color: #e5e5e5;
+}
+
+.prose h1 {
+  font-size: 2.5em;
+  color: #06b6d4;
+}
+
+.prose h2 {
+  font-size: 2em;
+  color: #0891b2;
+}
+
+.prose p {
+  line-height: 1.8;
+  margin-bottom: 1.5em;
+  color: #2d1b1a;
+  white-space: pre-wrap; /* Preserve whitespace and line breaks for indents */
+}
+
+.dark .prose p {
+  color: #ffffff;
+}
+
+.prose a {
+  color: #06b6d4;
+  text-decoration: underline;
+  text-decoration-color: #a5f3fc;
+  transition: all 0.2s;
+}
+
+.prose a:hover {
+  color: #0891b2;
+  text-decoration-color: #06b6d4;
+}
+
+.dark .prose a {
+  color: #22d3ee;
+  text-decoration-color: #0891b2;
+}
+
+.dark .prose a:hover {
+  color: #38bdf8;
+  text-decoration-color: #22d3ee;
+}
+
+.prose ul,
+.prose ol {
+  margin-bottom: 1.5em;
+  padding-left: 1.5em;
+  list-style-position: outside;
+  white-space: normal; /* Lists should wrap normally, not preserve all whitespace */
+}
+
+.prose ul {
+  list-style-type: disc;
+}
+
+.prose ol {
+  list-style-type: decimal;
+}
+
+.prose li {
+  margin-bottom: 0.5em;
+  line-height: 1.8;
+  display: list-item;
+  white-space: normal; /* List items should wrap normally */
+}
+
+/* Ensure &nbsp; entities and <br> tags are rendered correctly */
+/* Note: .prose p already has white-space: pre-wrap defined above for indents */
+
+.prose blockquote {
+  border-left: 4px solid #a5f3fc;
+  padding-left: 1.5em;
+  margin: 2em 0;
+  font-style: italic;
+  color: #3a2e2a;
+  background: #f0f9ff;
+  padding: 1em 1.5em;
+  border-radius: 0 8px 8px 0;
+}
+
+.dark .prose blockquote {
+  border-left-color: #0891b2;
+  color: #ffffff;
+  background: #1e293b;
+}
+
+.prose code {
+  background: #e0f2fe;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: #0e7490;
+  font-weight: 500;
+}
+
+.dark .prose code {
+  background: #1e293b;
+  color: #22d3ee;
+}
+
+.prose pre {
+  background: #e0f2fe;
+  padding: 1.5em;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 2em 0;
+  border: 1px solid #bae6fd;
+}
+
+.dark .prose pre {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.prose img {
+  border-radius: 12px;
+  margin: 2em 0;
+}
+
+/* Rich Text Editor Styles */
+.ProseMirror {
+  outline: none;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.ProseMirror br {
+  display: block;
+  content: "";
+  margin-top: 0.5em;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.dark .ProseMirror p.is-editor-empty:first-child::before {
+  color: #525252;
+}
+
+.ProseMirror h1 {
+  font-size: 2.5em;
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: #06b6d4;
+}
+
+.ProseMirror h2 {
+  font-size: 2em;
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: #0891b2;
+}
+
+.ProseMirror h3 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: #0891b2;
+}
+
+.ProseMirror p {
+  line-height: 1.8;
+  margin-bottom: 1em;
+  color: #2d1b1a;
+}
+
+.dark .ProseMirror p {
+  color: #ffffff;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+
+.ProseMirror li {
+  margin-bottom: 0.5em;
+  line-height: 1.8;
+}
+
+.ProseMirror blockquote {
+  border-left: 4px solid #a5f3fc;
+  padding-left: 1.5em;
+  margin: 1em 0;
+  font-style: italic;
+  color: #5a4d48;
+}
+
+.dark .ProseMirror blockquote {
+  border-left-color: #0891b2;
+  color: #ffffff;
+}
+
+.ProseMirror hr {
+  border: none;
+  border-top: 2px solid #e5e7eb;
+  margin: 2em 0;
+}
+
+.dark .ProseMirror hr {
+  border-top-color: #404040;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced hover effects for cards */
+.card-hover.bg-white\/80 {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Exclude navbar from hover effects */
+nav.bg-white\/80 {
+  transition: none !important;
+}
+
+nav.bg-white\/80:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Apply hover effects only to cards/content areas, not navbar */
+.card-hover.bg-white\/80:hover:not(nav) {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.1),
+    0 10px 10px -5px rgba(6, 182, 212, 0.04);
+}
+
+/* Image hover effects (opt-in, image-only hover) */
+.zoom-img img {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.zoom-img img:hover {
+  transform: scale(1.05);
+}
+
+/* Disable animations in admin panel */
+.admin-panel .bg-white\/80 {
+  transition: none !important;
+}
+
+.admin-panel .bg-white\/80:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.admin-panel img {
+  transition: none !important;
+}
+
+.admin-panel .bg-white\/80:hover img {
+  transform: none !important;
+}
+
+/* Button animations */
+button,
+a[class*="bg-cyan"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+button:hover,
+a[class*="bg-cyan"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+button:active,
+a[class*="bg-cyan"]:active {
+  transform: translateY(0);
+}
+
+/* Disable button animations in admin panel */
+.admin-panel button {
+  transition: background-color 0.2s, color 0.2s !important;
+}
+
+.admin-panel button:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Link hover animations - removed transform animation */
+
+/* Navigation animations - removed navbar animation, keeping link animations */
+
+/* Focus animations */
+input:focus,
+textarea:focus {
+  animation: scaleIn 0.2s ease-out;
 }

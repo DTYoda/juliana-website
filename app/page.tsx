@@ -5,6 +5,8 @@ import AnimatedSection from "@/components/AnimatedSection";
 import Image from "next/image";
 import { getWebsiteContent, type WebsiteContent } from "@/lib/postgres-website-content";
 
+// Force dynamic rendering to show real-time updates
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const recentStories = (await getPosts("stories")).slice(0, 3);

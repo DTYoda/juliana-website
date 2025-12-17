@@ -3,6 +3,9 @@ import { format } from 'date-fns';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
+// Force dynamic rendering to show real-time updates
+export const dynamic = 'force-dynamic';
+
 export async function generateStaticParams() {
   const blogs = await getPosts('blogs');
   return blogs.map((blog) => ({

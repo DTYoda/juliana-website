@@ -11,6 +11,9 @@ interface WebsiteContent {
   };
 }
 
+// Force dynamic rendering to show real-time updates
+export const dynamic = 'force-dynamic';
+
 export default async function Blog() {
   const blogs = await getPosts("blogs");
   const websiteContent = await getWebsiteContent();

@@ -1,6 +1,9 @@
 import Image from "next/image";
 import { getWebsiteContent } from "@/lib/postgres-website-content";
 
+// Force dynamic rendering to show real-time updates
+export const dynamic = "force-dynamic";
+
 interface WebsiteContent {
   home: {
     name: string;

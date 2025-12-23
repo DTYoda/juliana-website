@@ -3,6 +3,7 @@ import { getPosts } from "@/lib/markdown";
 import { format } from "date-fns";
 import AnimatedSection from "@/components/AnimatedSection";
 import { getWebsiteContent } from "@/lib/postgres-website-content";
+import Image from "next/image";
 
 interface WebsiteContent {
   portfolio: {
@@ -39,11 +40,13 @@ export default async function Portfolio() {
                 className="card-hover block bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-md transition-all border border-cyan-100/50 dark:border-gray-700/50 hover:border-cyan-300/50 dark:hover:border-gray-600/50 overflow-hidden"
               >
                 {story.image && (
-                  <div className="zoom-img aspect-square overflow-hidden">
-                    <img
+                  <div className="zoom-img aspect-square overflow-hidden relative">
+                    <Image
                       src={story.image}
                       alt={story.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
                 )}

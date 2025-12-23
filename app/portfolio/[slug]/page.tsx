@@ -2,6 +2,7 @@ import { getPostBySlug, getPosts } from '@/lib/markdown';
 import { format } from 'date-fns';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 // Force dynamic rendering to show real-time updates
 export const dynamic = 'force-dynamic';
@@ -43,11 +44,13 @@ export default async function StoryPage({
             {format(new Date(story.date), 'MMMM d, yyyy')}
           </p>
           {story.image && (
-            <div className="mt-6">
-              <img
+            <div className="mt-6 relative w-full aspect-video">
+              <Image
                 src={story.image}
                 alt={story.title}
-                className="w-full rounded-2xl"
+                fill
+                className="object-cover rounded-2xl"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               />
             </div>
           )}

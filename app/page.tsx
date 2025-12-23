@@ -122,9 +122,11 @@ export default async function Home() {
                   >
                     {story.image && (
                       <div className="zoom-img mb-4 -mx-6 -mt-6 aspect-square overflow-hidden">
-                        <img
+                        <Image
                           src={story.image}
                           alt={story.title}
+                          width={400}
+                          height={400}
                           className="w-full h-full object-cover rounded-t-2xl"
                         />
                       </div>
@@ -175,9 +177,11 @@ export default async function Home() {
                   >
                     {blog.image && (
                       <div className="zoom-img mb-4 -mx-6 -mt-6 aspect-square overflow-hidden">
-                        <img
+                        <Image
                           src={blog.image}
                           alt={blog.title}
+                          width={400}
+                          height={400}
                           className="w-full h-full object-cover rounded-t-2xl"
                         />
                       </div>

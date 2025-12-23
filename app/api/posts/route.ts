@@ -11,7 +11,13 @@ export async function GET(request: NextRequest) {
   }
 
   const posts = await getPosts(type);
-  return NextResponse.json(posts);
+  
+  // Add caching headers for better performance
+  return NextResponse.json(posts, {
+    headers: {
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+    },
+  });
 }
 
 export async function POST(request: NextRequest) {

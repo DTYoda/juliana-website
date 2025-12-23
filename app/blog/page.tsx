@@ -12,12 +12,15 @@ interface WebsiteContent {
   };
 }
 
-// Force dynamic rendering to show real-time updates
-export const dynamic = 'force-dynamic';
+// Use ISR with 60 second revalidate for better performance while still allowing updates
+export const revalidate = 60;
 
 export default async function Blog() {
-  const blogs = await getPosts("blogs");
-  const websiteContent = await getWebsiteContent();
+  // Parallelize data fetching
+  const [blogs, websiteContent] = await Promise.all([
+    getPosts("blogs"),
+    getWebsiteContent(),
+  ]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-rose-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -47,6 +50,7 @@ export default async function Blog() {
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      loading="lazy"
                     />
                   </div>
                 )}

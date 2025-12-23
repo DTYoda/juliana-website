@@ -4,8 +4,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
-// Force dynamic rendering to show real-time updates
-export const dynamic = 'force-dynamic';
+// Use ISR with 60 second revalidate for better performance while still allowing updates
+export const revalidate = 60;
 
 export async function generateStaticParams() {
   const blogs = await getPosts('blogs');

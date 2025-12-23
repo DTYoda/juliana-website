@@ -5,13 +5,19 @@ import AnimatedSection from "@/components/AnimatedSection";
 import Image from "next/image";
 import { getWebsiteContent, type WebsiteContent } from "@/lib/postgres-website-content";
 
-// Force dynamic rendering to show real-time updates
-export const dynamic = 'force-dynamic';
+// Use ISR with 60 second revalidate for better performance while still allowing updates
+export const revalidate = 60;
 
 export default async function Home() {
-  const recentStories = (await getPosts("stories")).slice(0, 3);
-  const recentBlogs = (await getPosts("blogs")).slice(0, 3);
-  const websiteContent = await getWebsiteContent();
+  // Parallelize all data fetching
+  const [allStories, allBlogs, websiteContent] = await Promise.all([
+    getPosts("stories"),
+    getPosts("blogs"),
+    getWebsiteContent(),
+  ]);
+  
+  const recentStories = allStories.slice(0, 3);
+  const recentBlogs = allBlogs.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-rose-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -128,6 +134,8 @@ export default async function Home() {
                           width={400}
                           height={400}
                           className="w-full h-full object-cover rounded-t-2xl"
+                          loading="lazy"
+                          sizes="(max-width: 768px) 100vw, 33vw"
                         />
                       </div>
                     )}
@@ -183,6 +191,8 @@ export default async function Home() {
                           width={400}
                           height={400}
                           className="w-full h-full object-cover rounded-t-2xl"
+                          loading="lazy"
+                          sizes="(max-width: 768px) 100vw, 33vw"
                         />
                       </div>
                     )}

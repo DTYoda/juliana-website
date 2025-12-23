@@ -17,31 +17,47 @@ export default function AnimatedSection({
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Use requestAnimationFrame for better performance
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => {
+          if (delay > 0) {
+            const timeoutId = setTimeout(() => {
+              setIsVisible(true);
+            }, delay);
+            observer.disconnect();
+            return () => clearTimeout(timeoutId);
+          } else {
             setIsVisible(true);
-          }, delay);
-          observer.disconnect();
+            observer.disconnect();
+          }
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: '50px' } // Start animation slightly before visible
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
+    const currentRef = ref.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
-    return () => observer.disconnect();
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+      observer.disconnect();
+    };
   }, [delay]);
 
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      className={`transition-opacity duration-700 ease-out ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
       } ${className}`}
+      style={{
+        willChange: isVisible ? 'auto' : 'opacity, transform', // Optimize for animations
+      }}
     >
       {children}
     </div>

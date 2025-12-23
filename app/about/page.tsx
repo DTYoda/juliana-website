@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { getWebsiteContent } from "@/lib/postgres-website-content";
 
-// Force dynamic rendering to show real-time updates
-export const dynamic = "force-dynamic";
+// Use ISR with 60 second revalidate for better performance while still allowing updates
+export const revalidate = 60;
 
 interface WebsiteContent {
   home: {
@@ -66,14 +66,15 @@ export default async function About() {
                 {websiteContent.about.galleryImages.map((image, index) => (
                   <div
                     key={index}
-                    className="zoom-img aspect-square overflow-hidden rounded-xl"
+                    className="zoom-img aspect-square overflow-hidden rounded-xl relative"
                   >
                     <Image
                       src={image}
                       alt={`Gallery image ${index + 1}`}
-                      width={300}
-                      height={300}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      loading="lazy"
+                      sizes="(max-width: 768px) 50vw, 33vw"
                     />
                   </div>
                 ))}

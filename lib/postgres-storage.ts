@@ -1,8 +1,5 @@
 import { sql } from './db';
-import { remark } from "remark";
-import remarkRehype from "remark-rehype";
-import rehypeRaw from "rehype-raw";
-import rehypeStringify from "rehype-stringify";
+import { processMarkdown } from './markdown-processor';
 
 export interface PostMetadata {
   title: string;
@@ -19,15 +16,15 @@ export interface Post extends PostMetadata {
 
 export async function getPosts(type: 'stories' | 'blogs'): Promise<Post[]> {
   try {
+    // Don't fetch content field for list pages - saves bandwidth and memory
     const posts = await sql`
-      SELECT slug, title, content, date, excerpt, image
+      SELECT slug, title, date, excerpt, image
       FROM posts
       WHERE type = ${type}
       ORDER BY date DESC
     ` as Array<{
       slug: string;
       title: string;
-      content: string;
       date: string;
       excerpt: string | null;
       image: string | null;
@@ -36,7 +33,7 @@ export async function getPosts(type: 'stories' | 'blogs'): Promise<Post[]> {
     return posts.map((post) => ({
       slug: post.slug,
       title: post.title,
-      content: post.content,
+      content: '', // Not needed for list pages
       date: post.date,
       excerpt: post.excerpt || '',
       image: post.image || '',
@@ -73,13 +70,8 @@ export async function getPostBySlug(
     
     const post = result[0];
     
-    // Process markdown to HTML - use rehype pipeline to allow HTML tags like <br>
-    const processedContent = await remark()
-      .use(remarkRehype, { allowDangerousHtml: true })
-      .use(rehypeRaw)
-      .use(rehypeStringify, { allowDangerousHtml: true })
-      .process(post.content);
-    const contentHtml = processedContent.toString();
+    // Process markdown to HTML using cached processor
+    const contentHtml = await processMarkdown(post.content);
     
     return {
       slug: post.slug,

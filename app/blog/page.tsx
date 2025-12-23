@@ -40,10 +40,10 @@ export default async function Blog() {
               <Link
                 key={blog.slug}
                 href={`/blog/${blog.slug}`}
-                className="card-hover block bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-md transition-all border border-cyan-100/50 dark:border-gray-700/50 hover:border-cyan-300/50 dark:hover:border-gray-600/50 overflow-hidden"
+                className="card-hover bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-md transition-all border border-cyan-100/50 dark:border-gray-700/50 hover:border-cyan-300/50 dark:hover:border-gray-600/50 overflow-hidden h-full flex flex-col"
               >
-                {blog.image && (
-                  <div className="zoom-img aspect-square overflow-hidden relative">
+                {blog.image ? (
+                  <div className="zoom-img aspect-square overflow-hidden relative flex-shrink-0">
                     <Image
                       src={blog.image}
                       alt={blog.title}
@@ -53,17 +53,19 @@ export default async function Blog() {
                       loading="lazy"
                     />
                   </div>
+                ) : (
+                  <div className="aspect-square bg-gradient-to-br from-cyan-100/50 via-rose-50/50 to-cyan-50/50 dark:from-gray-700/50 dark:via-gray-600/50 dark:to-gray-700/50 flex-shrink-0"></div>
                 )}
-                <div className="p-4 sm:p-6">
+                <div className="p-4 sm:p-6 flex-grow flex flex-col">
                   <h2 className="text-lg sm:text-xl font-serif text-gray-900 dark:text-white mb-2 font-semibold">
                     {blog.title}
                   </h2>
                   {blog.excerpt && (
-                    <p className="text-gray-700 dark:text-white mb-3 leading-relaxed line-clamp-2 text-sm">
+                    <p className="text-gray-700 dark:text-white mb-3 leading-relaxed line-clamp-2 text-sm flex-grow">
                       {blog.excerpt}
                     </p>
                   )}
-                  <p className="text-sm text-cyan-600 dark:text-cyan-400 font-medium">
+                  <p className="text-sm text-cyan-600 dark:text-cyan-400 font-medium mt-auto">
                     {format(new Date(blog.date), "MMMM d, yyyy")}
                   </p>
                 </div>

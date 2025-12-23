@@ -124,10 +124,10 @@ export default async function Home() {
                   <Link
                     key={story.slug}
                     href={`/portfolio/${story.slug}`}
-                    className="card-hover bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all border border-cyan-100/50 dark:border-gray-700/50 hover:border-cyan-300/50 dark:hover:border-gray-600/50"
+                    className="card-hover bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all border border-cyan-100/50 dark:border-gray-700/50 hover:border-cyan-300/50 dark:hover:border-gray-600/50 h-full flex flex-col"
                   >
-                    {story.image && (
-                      <div className="zoom-img mb-4 -mx-4 sm:-mx-6 -mt-4 sm:-mt-6 aspect-square overflow-hidden relative">
+                    {story.image ? (
+                      <div className="zoom-img mb-4 -mx-4 sm:-mx-6 -mt-4 sm:-mt-6 aspect-square overflow-hidden relative flex-shrink-0">
                         <Image
                           src={story.image}
                           alt={story.title}
@@ -137,18 +137,22 @@ export default async function Home() {
                           sizes="(max-width: 768px) 100vw, 33vw"
                         />
                       </div>
+                    ) : (
+                      <div className="mb-4 -mx-4 sm:-mx-6 -mt-4 sm:-mt-6 aspect-square bg-gradient-to-br from-cyan-100/50 via-rose-50/50 to-cyan-50/50 dark:from-gray-700/50 dark:via-gray-600/50 dark:to-gray-700/50 rounded-t-2xl flex-shrink-0"></div>
                     )}
-                    <h3 className="text-xl sm:text-2xl font-serif text-gray-900 dark:text-white mb-3 font-semibold">
-                      {story.title}
-                    </h3>
-                    {story.excerpt && (
-                      <p className="text-gray-700 dark:text-white mb-4 line-clamp-3">
-                        {story.excerpt}
+                    <div className="flex-grow flex flex-col">
+                      <h3 className="text-xl sm:text-2xl font-serif text-gray-900 dark:text-white mb-3 font-semibold">
+                        {story.title}
+                      </h3>
+                      {story.excerpt && (
+                        <p className="text-gray-700 dark:text-white mb-4 line-clamp-3 flex-grow">
+                          {story.excerpt}
+                        </p>
+                      )}
+                      <p className="text-sm text-cyan-600 dark:text-cyan-400 font-medium mt-auto">
+                        {format(new Date(story.date), "MMMM d, yyyy")}
                       </p>
-                    )}
-                    <p className="text-sm text-cyan-600 dark:text-cyan-400 font-medium">
-                      {format(new Date(story.date), "MMMM d, yyyy")}
-                    </p>
+                    </div>
                   </Link>
                 ))
               ) : (
@@ -180,10 +184,10 @@ export default async function Home() {
                   <Link
                     key={blog.slug}
                     href={`/blog/${blog.slug}`}
-                    className="card-hover bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all border border-cyan-100/50 dark:border-gray-700/50 hover:border-cyan-300/50 dark:hover:border-gray-600/50"
+                    className="card-hover bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all border border-cyan-100/50 dark:border-gray-700/50 hover:border-cyan-300/50 dark:hover:border-gray-600/50 h-full flex flex-col"
                   >
-                    {blog.image && (
-                      <div className="zoom-img mb-4 -mx-4 sm:-mx-6 -mt-4 sm:-mt-6 aspect-square overflow-hidden relative">
+                    {blog.image ? (
+                      <div className="zoom-img mb-4 -mx-4 sm:-mx-6 -mt-4 sm:-mt-6 aspect-square overflow-hidden relative flex-shrink-0">
                         <Image
                           src={blog.image}
                           alt={blog.title}
@@ -193,18 +197,22 @@ export default async function Home() {
                           sizes="(max-width: 768px) 100vw, 33vw"
                         />
                       </div>
+                    ) : (
+                      <div className="mb-4 -mx-4 sm:-mx-6 -mt-4 sm:-mt-6 aspect-square bg-gradient-to-br from-cyan-100/50 via-rose-50/50 to-cyan-50/50 dark:from-gray-700/50 dark:via-gray-600/50 dark:to-gray-700/50 rounded-t-2xl flex-shrink-0"></div>
                     )}
-                    <h3 className="text-xl sm:text-2xl font-serif text-gray-900 dark:text-white mb-3 font-semibold">
-                      {blog.title}
-                    </h3>
-                    {blog.excerpt && (
-                      <p className="text-gray-700 dark:text-white mb-4 line-clamp-3">
-                        {blog.excerpt}
+                    <div className="flex-grow flex flex-col">
+                      <h3 className="text-xl sm:text-2xl font-serif text-gray-900 dark:text-white mb-3 font-semibold">
+                        {blog.title}
+                      </h3>
+                      {blog.excerpt && (
+                        <p className="text-gray-700 dark:text-white mb-4 line-clamp-3 flex-grow">
+                          {blog.excerpt}
+                        </p>
+                      )}
+                      <p className="text-sm text-cyan-600 dark:text-cyan-400 font-medium mt-auto">
+                        {format(new Date(blog.date), "MMMM d, yyyy")}
                       </p>
-                    )}
-                    <p className="text-sm text-cyan-600 dark:text-cyan-400 font-medium">
-                      {format(new Date(blog.date), "MMMM d, yyyy")}
-                    </p>
+                    </div>
                   </Link>
                 ))
               ) : (

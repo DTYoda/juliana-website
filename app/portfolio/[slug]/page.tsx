@@ -28,28 +28,29 @@ export default async function StoryPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-rose-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <article className="max-w-3xl mx-auto px-6 py-16">
+      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
         <Link
           href="/portfolio"
-          className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors mb-8 inline-block font-medium"
+          className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors mb-6 sm:mb-8 inline-block font-medium text-sm sm:text-base"
         >
           ← Back to Portfolio
         </Link>
         
-        <header className="mb-12">
-          <h1 className="text-5xl font-serif text-cyan-600 dark:text-cyan-400 mb-4 font-bold">
+        <header className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-cyan-600 dark:text-cyan-400 mb-4 font-bold">
             {story.title}
           </h1>
           <p className="text-gray-700 dark:text-white font-medium">
             {format(new Date(story.date), 'MMMM d, yyyy')}
           </p>
           {story.image && (
-            <div className="mt-6 relative w-full aspect-video">
+            <div className="mt-6 w-full">
               <Image
                 src={story.image}
                 alt={story.title}
-                fill
-                className="object-cover rounded-2xl"
+                width={1200}
+                height={800}
+                className="w-full h-auto rounded-2xl"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               />
             </div>

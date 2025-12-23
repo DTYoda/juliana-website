@@ -24,18 +24,18 @@ export default async function Portfolio() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-rose-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <main className="max-w-6xl mx-auto px-6 py-16">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
         <AnimatedSection>
-          <h1 className="text-5xl font-serif text-cyan-600 dark:text-cyan-400 mb-4 font-bold">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-cyan-600 dark:text-cyan-400 mb-4 font-bold">
             {websiteContent.portfolio.title}
           </h1>
-          <p className="text-lg text-gray-800 dark:text-white mb-12">
+          <p className="text-base sm:text-lg text-gray-800 dark:text-white mb-8 sm:mb-12">
             {websiteContent.portfolio.description}
           </p>
         </AnimatedSection>
 
         {stories.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {stories.map((story) => (
               <Link
                 key={story.slug}
@@ -54,8 +54,8 @@ export default async function Portfolio() {
                     />
                   </div>
                 )}
-                <div className="p-6">
-                  <h2 className="text-xl font-serif text-gray-900 dark:text-white mb-2 font-semibold">
+                <div className="p-4 sm:p-6">
+                  <h2 className="text-lg sm:text-xl font-serif text-gray-900 dark:text-white mb-2 font-semibold">
                     {story.title}
                   </h2>
                   {story.excerpt && (
@@ -71,8 +71,8 @@ export default async function Portfolio() {
             ))}
           </div>
         ) : (
-          <div className="bg-gradient-to-br from-cyan-100/80 via-rose-50/80 to-cyan-50/80 dark:from-gray-800/80 dark:via-gray-700/80 dark:to-gray-800/80 backdrop-blur-sm rounded-2xl p-12 text-center border border-cyan-200/50 dark:border-gray-700/50">
-            <p className="text-xl text-gray-800 dark:text-white">
+          <div className="bg-gradient-to-br from-cyan-100/80 via-rose-50/80 to-cyan-50/80 dark:from-gray-800/80 dark:via-gray-700/80 dark:to-gray-800/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 md:p-12 text-center border border-cyan-200/50 dark:border-gray-700/50">
+            <p className="text-lg sm:text-xl text-gray-800 dark:text-white">
               No stories in the portfolio yet. Check back soon!
             </p>
           </div>

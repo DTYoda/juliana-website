@@ -52,7 +52,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${playfair.variable} ${inter.variable} antialiased`}>
+      <body className={`${playfair.variable} ${inter.variable} antialiased overflow-x-hidden`}>
         <ThemeProvider>
           <Navigation />
           {children}

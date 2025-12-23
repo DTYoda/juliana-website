@@ -328,6 +328,12 @@ h6 {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Enhanced hover effects for cards */

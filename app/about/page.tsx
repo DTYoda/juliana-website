@@ -39,12 +39,12 @@ export default async function About() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-rose-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <main className="max-w-4xl mx-auto px-6 py-16">
-        <h1 className="text-5xl font-serif text-cyan-600 dark:text-cyan-400 mb-8 font-bold">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-cyan-600 dark:text-cyan-400 mb-6 sm:mb-8 font-bold">
           {websiteContent.about.title}
         </h1>
 
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-12 shadow-sm border border-cyan-100/50 dark:border-gray-700/50 space-y-8">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 md:p-12 shadow-sm border border-cyan-100/50 dark:border-gray-700/50 space-y-6 sm:space-y-8">
           <div className="prose prose-lg max-w-none">
             {websiteContent.about.content.map((paragraph, index) => (
               <p
@@ -58,11 +58,11 @@ export default async function About() {
 
           {/* Image Gallery */}
           <div className="mt-12 pt-12 border-t border-cyan-100 dark:border-gray-700">
-            <h2 className="text-3xl font-serif text-cyan-600 dark:text-cyan-400 mb-6 font-bold">
+            <h2 className="text-2xl sm:text-3xl font-serif text-cyan-600 dark:text-cyan-400 mb-4 sm:mb-6 font-bold">
               {websiteContent.about.galleryTitle}
             </h2>
             {websiteContent.about.galleryImages.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                 {websiteContent.about.galleryImages.map((image, index) => (
                   <div
                     key={index}

@@ -28,16 +28,16 @@ export default async function BlogPostPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-rose-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <article className="max-w-3xl mx-auto px-6 py-16">
+      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
         <Link
           href="/blog"
-          className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors mb-8 inline-block font-medium"
+          className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors mb-6 sm:mb-8 inline-block font-medium text-sm sm:text-base"
         >
           ← Back to Blog
         </Link>
         
-        <header className="mb-12">
-          <h1 className="text-5xl font-serif text-cyan-600 dark:text-cyan-400 mb-4 font-bold">
+        <header className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-cyan-600 dark:text-cyan-400 mb-4 font-bold">
             {blog.title}
           </h1>
           <p className="text-gray-700 dark:text-white font-medium">

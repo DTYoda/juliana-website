@@ -47,7 +47,7 @@ export default async function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/50 dark:from-black/40 dark:via-black/20 dark:to-black/50"></div>
 
           {/* Content Overlay */}
-          <div className="relative z-10 max-w-6xl mx-auto px-6 py-16 md:py-24">
+          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-24">
             <div className="text-center">
               {/* Profile Picture */}
               <div className="mb-8 flex justify-center">
@@ -75,26 +75,26 @@ export default async function Home() {
               </div>
 
               {/* Name and Title */}
-              <h1 className="text-5xl md:text-6xl font-serif text-white dark:text-white mb-4 drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] dark:drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] font-bold">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif text-white dark:text-white mb-4 drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] dark:drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] font-bold px-4">
                 {websiteContent.home.name}
               </h1>
-              <p className="text-xl md:text-2xl text-white dark:text-white mb-8 font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              <p className="text-lg sm:text-xl md:text-2xl text-white dark:text-white mb-6 sm:mb-8 font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-4">
                 {websiteContent.home.title}
               </p>
 
               {/* Quote */}
-              <div className="max-w-3xl mx-auto mb-8">
-                <blockquote className="text-xl md:text-2xl font-serif text-white dark:text-white italic leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] dark:drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] font-medium">
+              <div className="max-w-3xl mx-auto mb-6 sm:mb-8 px-4">
+                <blockquote className="text-base sm:text-lg md:text-xl lg:text-2xl font-serif text-white dark:text-white italic leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] dark:drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] font-medium">
                   "{websiteContent.home.quote}"
                 </blockquote>
               </div>
 
               {/* Personal Description */}
-              <div className="max-w-2xl mx-auto">
-                <p className="text-lg text-white dark:text-white leading-relaxed mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-medium">
+              <div className="max-w-2xl mx-auto px-4">
+                <p className="text-base sm:text-lg text-white dark:text-white leading-relaxed mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-medium">
                   {websiteContent.home.description1}
                 </p>
-                <p className="text-lg text-white dark:text-white leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-medium">
+                <p className="text-base sm:text-lg text-white dark:text-white leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-medium">
                   {websiteContent.home.description2}
                 </p>
               </div>
@@ -103,43 +103,42 @@ export default async function Home() {
         </div>
       </AnimatedSection>
 
-      <main className="max-w-6xl mx-auto px-6 py-16">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
         {/* Recent Stories */}
         <AnimatedSection delay={400}>
-          <section className="mb-20">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-4xl font-serif text-cyan-600 dark:text-cyan-400 font-bold">
+          <section className="mb-12 sm:mb-16 md:mb-20">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-cyan-600 dark:text-cyan-400 font-bold">
                 Recent Stories
               </h2>
               <Link
                 href="/portfolio"
-                className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors font-medium"
+                className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors font-medium text-sm sm:text-base"
               >
                 View All →
               </Link>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
               {recentStories.length > 0 ? (
                 recentStories.map((story) => (
                   <Link
                     key={story.slug}
                     href={`/portfolio/${story.slug}`}
-                    className="card-hover bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm hover:shadow-md transition-all border border-cyan-100/50 dark:border-gray-700/50 hover:border-cyan-300/50 dark:hover:border-gray-600/50"
+                    className="card-hover bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all border border-cyan-100/50 dark:border-gray-700/50 hover:border-cyan-300/50 dark:hover:border-gray-600/50"
                   >
                     {story.image && (
-                      <div className="zoom-img mb-4 -mx-6 -mt-6 aspect-square overflow-hidden">
+                      <div className="zoom-img mb-4 -mx-4 sm:-mx-6 -mt-4 sm:-mt-6 aspect-square overflow-hidden relative">
                         <Image
                           src={story.image}
                           alt={story.title}
-                          width={400}
-                          height={400}
-                          className="w-full h-full object-cover rounded-t-2xl"
+                          fill
+                          className="object-cover rounded-t-2xl"
                           loading="lazy"
                           sizes="(max-width: 768px) 100vw, 33vw"
                         />
                       </div>
                     )}
-                    <h3 className="text-2xl font-serif text-gray-900 dark:text-white mb-3 font-semibold">
+                    <h3 className="text-xl sm:text-2xl font-serif text-gray-900 dark:text-white mb-3 font-semibold">
                       {story.title}
                     </h3>
                     {story.excerpt && (
@@ -163,40 +162,39 @@ export default async function Home() {
 
         {/* Recent Blog Posts */}
         <AnimatedSection delay={600}>
-          <section className="mb-20">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-4xl font-serif text-cyan-600 dark:text-cyan-400 font-bold">
+          <section className="mb-12 sm:mb-16 md:mb-20">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-cyan-600 dark:text-cyan-400 font-bold">
                 Latest Blog Posts
               </h2>
               <Link
                 href="/blog"
-                className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors font-medium"
+                className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors font-medium text-sm sm:text-base"
               >
                 View All →
               </Link>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
               {recentBlogs.length > 0 ? (
                 recentBlogs.map((blog) => (
                   <Link
                     key={blog.slug}
                     href={`/blog/${blog.slug}`}
-                    className="card-hover bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm hover:shadow-md transition-all border border-cyan-100/50 dark:border-gray-700/50 hover:border-cyan-300/50 dark:hover:border-gray-600/50"
+                    className="card-hover bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all border border-cyan-100/50 dark:border-gray-700/50 hover:border-cyan-300/50 dark:hover:border-gray-600/50"
                   >
                     {blog.image && (
-                      <div className="zoom-img mb-4 -mx-6 -mt-6 aspect-square overflow-hidden">
+                      <div className="zoom-img mb-4 -mx-4 sm:-mx-6 -mt-4 sm:-mt-6 aspect-square overflow-hidden relative">
                         <Image
                           src={blog.image}
                           alt={blog.title}
-                          width={400}
-                          height={400}
-                          className="w-full h-full object-cover rounded-t-2xl"
+                          fill
+                          className="object-cover rounded-t-2xl"
                           loading="lazy"
                           sizes="(max-width: 768px) 100vw, 33vw"
                         />
                       </div>
                     )}
-                    <h3 className="text-2xl font-serif text-gray-900 dark:text-white mb-3 font-semibold">
+                    <h3 className="text-xl sm:text-2xl font-serif text-gray-900 dark:text-white mb-3 font-semibold">
                       {blog.title}
                     </h3>
                     {blog.excerpt && (
@@ -220,16 +218,16 @@ export default async function Home() {
 
         {/* About Preview */}
         <AnimatedSection delay={800}>
-          <section className="bg-gradient-to-br from-cyan-100/80 via-rose-50/80 to-cyan-50/80 dark:from-gray-800/80 dark:via-gray-700/80 dark:to-gray-800/80 backdrop-blur-sm rounded-3xl p-12 border border-cyan-200/50 dark:border-gray-700/50">
-            <h2 className="text-4xl font-serif text-cyan-600 dark:text-cyan-400 mb-6 font-bold">
+          <section className="bg-gradient-to-br from-cyan-100/80 via-rose-50/80 to-cyan-50/80 dark:from-gray-800/80 dark:via-gray-700/80 dark:to-gray-800/80 backdrop-blur-sm rounded-3xl p-6 sm:p-8 md:p-12 border border-cyan-200/50 dark:border-gray-700/50">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-cyan-600 dark:text-cyan-400 mb-4 sm:mb-6 font-bold">
               {websiteContent.home.aboutPreviewTitle}
             </h2>
-            <p className="text-lg text-gray-800 dark:text-white leading-relaxed mb-6">
+            <p className="text-base sm:text-lg text-gray-800 dark:text-white leading-relaxed mb-6">
               {websiteContent.home.aboutPreviewText}
             </p>
             <Link
               href="/about"
-              className="inline-block bg-cyan-600 dark:bg-cyan-600 text-white px-8 py-3 rounded-full hover:bg-cyan-700 dark:hover:bg-cyan-700 transition-colors font-medium shadow-md hover:shadow-lg"
+              className="inline-block bg-cyan-600 dark:bg-cyan-600 text-white px-6 sm:px-8 py-3 rounded-full hover:bg-cyan-700 dark:hover:bg-cyan-700 transition-colors font-medium shadow-md hover:shadow-lg text-sm sm:text-base"
             >
               {websiteContent.home.aboutPreviewButtonText}
             </Link>

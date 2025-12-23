@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getPostBySlug, savePost } from '@/lib/markdown';
 import { slugify } from '@/lib/utils';
 
@@ -54,9 +55,16 @@ export async function PUT(
     if (oldSlug !== newSlug) {
       const { deletePost } = await import('@/lib/markdown');
       await deletePost(type, oldSlug);
+      // Revalidate old post page (will 404 now)
+      revalidatePath(`/${type === 'stories' ? 'portfolio' : 'blog'}/${oldSlug}`);
     }
 
     await savePost(type, newSlug, title, content, date, excerpt, image);
+
+    // Revalidate all pages that display posts
+    revalidatePath('/', 'layout');
+    revalidatePath(`/${type === 'stories' ? 'portfolio' : 'blog'}`, 'page');
+    revalidatePath(`/${type === 'stories' ? 'portfolio' : 'blog'}/${newSlug}`, 'page');
 
     return NextResponse.json({ success: true, slug: newSlug });
   } catch (error) {

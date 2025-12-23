@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getPosts, savePost, deletePost } from '@/lib/markdown';
 import { slugify } from '@/lib/utils';
 
@@ -39,6 +40,10 @@ export async function POST(request: NextRequest) {
     const slug = slugify(title);
     await savePost(type, slug, title, content, date, excerpt, image);
 
+    // Revalidate pages after creating a new post
+    revalidatePath('/', 'layout');
+    revalidatePath(`/${type === 'stories' ? 'portfolio' : 'blog'}`, 'page');
+
     return NextResponse.json({ success: true, slug });
   } catch (error) {
     return NextResponse.json(
@@ -63,8 +68,19 @@ export async function DELETE(request: NextRequest) {
     }
 
     await deletePost(type, slug);
-    return NextResponse.json({ success: true });
+    
+    // Revalidate all pages that display posts
+    revalidatePath('/', 'layout');
+    revalidatePath(`/${type === 'stories' ? 'portfolio' : 'blog'}`, 'page');
+    revalidatePath(`/${type === 'stories' ? 'portfolio' : 'blog'}/${slug}`, 'page');
+    
+    return NextResponse.json({ success: true }, {
+      headers: {
+        'Cache-Control': 'no-store, must-revalidate',
+      },
+    });
   } catch (error) {
+    console.error('Delete error:', error);
     return NextResponse.json(
       { error: 'Failed to delete post' },
       { status: 500 }

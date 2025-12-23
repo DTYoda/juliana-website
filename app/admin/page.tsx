@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import RichTextEditor from "@/components/RichTextEditor";
 import { htmlToMarkdown } from "@/lib/html-to-markdown";
 import Image from "next/image";
+import DarkModeToggle from "@/components/DarkModeToggle";
 
 interface Post {
   slug: string;
@@ -83,7 +84,15 @@ export default function AdminPanel() {
 
   const loadPosts = async () => {
     try {
-      const response = await fetch(`/api/posts?type=${activeTab}`);
+      // Add timestamp to prevent caching
+      const timestamp = Date.now();
+      const response = await fetch(`/api/posts?type=${activeTab}&_t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      });
       const data = await response.json();
       setPosts(data);
     } catch (error) {
@@ -267,22 +276,34 @@ export default function AdminPanel() {
     }
 
     try {
+      setLoading(true);
       const response = await fetch(
         `/api/posts?type=${activeTab}&slug=${slug}`,
         {
           method: "DELETE",
+          cache: 'no-store',
         }
       );
 
       if (response.ok) {
-        loadPosts();
+        // Force reload posts without cache
+        await loadPosts();
         if (editingPost?.slug === slug) {
           handleCancel();
         }
+        // Also reload website content if we're on that tab to ensure consistency
+        if (activeTab === 'website') {
+          await loadWebsiteContent();
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(errorData.error || "Failed to delete post");
       }
     } catch (error) {
       console.error("Failed to delete post:", error);
       alert("Failed to delete post");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -348,7 +369,8 @@ export default function AdminPanel() {
       });
 
       if (response.ok) {
-        loadPosts();
+        // Wait for posts to reload before canceling to ensure UI updates
+        await loadPosts();
         handleCancel();
       } else {
         const error = await response.json();
@@ -378,29 +400,30 @@ export default function AdminPanel() {
   // If editing website content, show website editor
   if (activeTab === "website" && editingWebsiteContent && websiteFormData) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-rose-50 to-cyan-50 admin-panel">
+      <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-rose-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 admin-panel">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="mb-6 flex items-center justify-between">
-            <h1 className="text-4xl font-serif text-cyan-500">Edit Website Content</h1>
+            <h1 className="text-4xl font-serif text-cyan-500 dark:text-cyan-400">Edit Website Content</h1>
+            <DarkModeToggle />
             <button
               onClick={() => {
                 setEditingWebsiteContent(false);
                 setWebsiteFormData(websiteContent);
               }}
-              className="text-cyan-500 hover:text-cyan-600 transition-colors font-medium"
+              className="text-cyan-500 dark:text-cyan-400 hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors font-medium"
             >
               ← Back
             </button>
           </div>
 
           {/* Sub-tabs for website content sections */}
-          <div className="flex gap-4 mb-8 border-b border-cyan-100">
+          <div className="flex gap-4 mb-8 border-b border-cyan-100 dark:border-gray-700">
             <button
               onClick={() => setWebsiteContentSection("home")}
               className={`px-6 py-3 font-medium transition-colors ${
                 websiteContentSection === "home"
-                  ? "text-cyan-500 border-b-2 border-cyan-500"
-                  : "text-gray-600 hover:text-cyan-500"
+                  ? "text-cyan-500 dark:text-cyan-400 border-b-2 border-cyan-500 dark:border-cyan-400"
+                  : "text-gray-600 dark:text-gray-400 hover:text-cyan-500 dark:hover:text-cyan-400"
               }`}
             >
               Home Page
@@ -409,8 +432,8 @@ export default function AdminPanel() {
               onClick={() => setWebsiteContentSection("about")}
               className={`px-6 py-3 font-medium transition-colors ${
                 websiteContentSection === "about"
-                  ? "text-cyan-500 border-b-2 border-cyan-500"
-                  : "text-gray-600 hover:text-cyan-500"
+                  ? "text-cyan-500 dark:text-cyan-400 border-b-2 border-cyan-500 dark:border-cyan-400"
+                  : "text-gray-600 dark:text-gray-400 hover:text-cyan-500 dark:hover:text-cyan-400"
               }`}
             >
               About Page
@@ -419,8 +442,8 @@ export default function AdminPanel() {
               onClick={() => setWebsiteContentSection("portfolio")}
               className={`px-6 py-3 font-medium transition-colors ${
                 websiteContentSection === "portfolio"
-                  ? "text-cyan-500 border-b-2 border-cyan-500"
-                  : "text-gray-600 hover:text-cyan-500"
+                  ? "text-cyan-500 dark:text-cyan-400 border-b-2 border-cyan-500 dark:border-cyan-400"
+                  : "text-gray-600 dark:text-gray-400 hover:text-cyan-500 dark:hover:text-cyan-400"
               }`}
             >
               Portfolio Page
@@ -429,8 +452,8 @@ export default function AdminPanel() {
               onClick={() => setWebsiteContentSection("blog")}
               className={`px-6 py-3 font-medium transition-colors ${
                 websiteContentSection === "blog"
-                  ? "text-cyan-500 border-b-2 border-cyan-500"
-                  : "text-gray-600 hover:text-cyan-500"
+                  ? "text-cyan-500 dark:text-cyan-400 border-b-2 border-cyan-500 dark:border-cyan-400"
+                  : "text-gray-600 dark:text-gray-400 hover:text-cyan-500 dark:hover:text-cyan-400"
               }`}
             >
               Blog Page
@@ -440,12 +463,12 @@ export default function AdminPanel() {
           <div className="space-y-8">
             {/* Home Page Content */}
             {websiteContentSection === "home" && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-cyan-100/50">
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 border border-cyan-100 dark:border-gray-700/50">
               <h2 className="text-3xl font-serif text-cyan-500 mb-6">Home Page</h2>
               
               <div className="space-y-6">
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Navbar Button Title</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Navbar Button Title</label>
                   <input
                     type="text"
                     value={websiteFormData.home.navbarTitle}
@@ -454,12 +477,12 @@ export default function AdminPanel() {
                         prev ? { ...prev, home: { ...prev.home, navbarTitle: e.target.value } } : null
                       )
                     }
-                    className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 mb-4"
+                    className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-4"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Name</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Name</label>
                   <input
                     type="text"
                     value={websiteFormData.home.name}
@@ -468,12 +491,12 @@ export default function AdminPanel() {
                         prev ? { ...prev, home: { ...prev.home, name: e.target.value } } : null
                       )
                     }
-                    className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Title</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Title</label>
                   <input
                     type="text"
                     value={websiteFormData.home.title}
@@ -482,12 +505,12 @@ export default function AdminPanel() {
                         prev ? { ...prev, home: { ...prev.home, title: e.target.value } } : null
                       )
                     }
-                    className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Quote</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Quote</label>
                   <textarea
                     value={websiteFormData.home.quote}
                     onChange={(e) =>
@@ -495,13 +518,13 @@ export default function AdminPanel() {
                         prev ? { ...prev, home: { ...prev.home, quote: e.target.value } } : null
                       )
                     }
-                    className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     rows={3}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Description 1</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Description 1</label>
                   <textarea
                     value={websiteFormData.home.description1}
                     onChange={(e) =>
@@ -511,13 +534,13 @@ export default function AdminPanel() {
                           : null
                       )
                     }
-                    className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     rows={4}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Description 2</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Description 2</label>
                   <textarea
                     value={websiteFormData.home.description2}
                     onChange={(e) =>
@@ -527,18 +550,18 @@ export default function AdminPanel() {
                           : null
                       )
                     }
-                    className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     rows={4}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Banner Image</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Banner Image</label>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleWebsiteImageUpload(e, "banner")}
-                    className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     disabled={uploadingBanner}
                   />
                   {uploadingBanner && <p className="text-sm text-cyan-500 mt-2">Uploading...</p>}
@@ -556,12 +579,12 @@ export default function AdminPanel() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Profile Image</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Profile Image</label>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleWebsiteImageUpload(e, "profile")}
-                    className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     disabled={uploadingProfile}
                   />
                   {uploadingProfile && <p className="text-sm text-cyan-500 mt-2">Uploading...</p>}
@@ -578,11 +601,11 @@ export default function AdminPanel() {
                   )}
                 </div>
 
-                <div className="pt-6 border-t border-cyan-200">
+                <div className="pt-6 border-t border-cyan-200 dark:border-gray-600">
                   <h3 className="text-xl font-serif text-cyan-500 mb-4">About Preview Section</h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-gray-700 font-medium mb-2">Preview Title</label>
+                      <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Preview Title</label>
                       <input
                         type="text"
                         value={websiteFormData.home.aboutPreviewTitle}
@@ -596,11 +619,11 @@ export default function AdminPanel() {
                               : null
                           )
                         }
-                        className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                        className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-700 font-medium mb-2">Preview Text</label>
+                      <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Preview Text</label>
                       <textarea
                         value={websiteFormData.home.aboutPreviewText}
                         onChange={(e) =>
@@ -613,12 +636,12 @@ export default function AdminPanel() {
                               : null
                           )
                         }
-                        className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                        className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         rows={4}
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-700 font-medium mb-2">Button Text</label>
+                      <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Button Text</label>
                       <input
                         type="text"
                         value={websiteFormData.home.aboutPreviewButtonText}
@@ -632,7 +655,7 @@ export default function AdminPanel() {
                               : null
                           )
                         }
-                        className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                        className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       />
                     </div>
                   </div>
@@ -644,12 +667,12 @@ export default function AdminPanel() {
 
             {/* About Page Content */}
             {websiteContentSection === "about" && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-cyan-100/50">
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 border border-cyan-100 dark:border-gray-700/50">
                 <h2 className="text-3xl font-serif text-cyan-500 mb-6">About Page</h2>
                 
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2">Navbar Button Title</label>
+                    <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Navbar Button Title</label>
                     <input
                       type="text"
                       value={websiteFormData.about.navbarTitle}
@@ -658,12 +681,12 @@ export default function AdminPanel() {
                           prev ? { ...prev, about: { ...prev.about, navbarTitle: e.target.value } } : null
                         )
                       }
-                      className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 mb-4"
+                      className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-4"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2">Page Title</label>
+                    <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Page Title</label>
                     <input
                       type="text"
                       value={websiteFormData.about.title}
@@ -672,12 +695,12 @@ export default function AdminPanel() {
                           prev ? { ...prev, about: { ...prev.about, title: e.target.value } } : null
                         )
                       }
-                      className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                   </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Content (one paragraph per line)</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Content (one paragraph per line)</label>
                   <textarea
                     value={websiteFormData.about.content.join("\n\n")}
                     onChange={(e) =>
@@ -693,13 +716,13 @@ export default function AdminPanel() {
                           : null
                       )
                     }
-                    className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     rows={15}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Gallery Title</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Gallery Title</label>
                   <input
                     type="text"
                     value={websiteFormData.about.galleryTitle}
@@ -710,17 +733,17 @@ export default function AdminPanel() {
                           : null
                       )
                     }
-                    className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Gallery Images</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Gallery Images</label>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleGalleryImageUpload(e)}
-                    className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 mb-4"
+                    className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-4"
                     disabled={uploadingGallery}
                   />
                   {uploadingGallery && <p className="text-sm text-cyan-500 mb-4">Uploading...</p>}
@@ -768,12 +791,12 @@ export default function AdminPanel() {
 
             {/* Portfolio Page Content */}
             {websiteContentSection === "portfolio" && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-cyan-100/50">
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 border border-cyan-100 dark:border-gray-700/50">
                 <h2 className="text-3xl font-serif text-cyan-500 mb-6">Portfolio Page</h2>
                 
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2">Navbar Button Title</label>
+                    <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Navbar Button Title</label>
                     <input
                       type="text"
                       value={websiteFormData.portfolio.navbarTitle}
@@ -784,12 +807,12 @@ export default function AdminPanel() {
                             : null
                         )
                       }
-                      className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 mb-4"
+                      className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-4"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2">Page Title</label>
+                    <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Page Title</label>
                     <input
                       type="text"
                       value={websiteFormData.portfolio.title}
@@ -800,12 +823,12 @@ export default function AdminPanel() {
                             : null
                         )
                       }
-                      className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2">Description</label>
+                    <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Description</label>
                     <textarea
                       value={websiteFormData.portfolio.description}
                       onChange={(e) =>
@@ -818,7 +841,7 @@ export default function AdminPanel() {
                             : null
                         )
                       }
-                      className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       rows={3}
                     />
                   </div>
@@ -828,12 +851,12 @@ export default function AdminPanel() {
 
             {/* Blog Page Content */}
             {websiteContentSection === "blog" && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-cyan-100/50">
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 border border-cyan-100 dark:border-gray-700/50">
                 <h2 className="text-3xl font-serif text-cyan-500 mb-6">Blog Page</h2>
                 
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2">Navbar Button Title</label>
+                    <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Navbar Button Title</label>
                     <input
                       type="text"
                       value={websiteFormData.blog.navbarTitle}
@@ -844,12 +867,12 @@ export default function AdminPanel() {
                             : null
                         )
                       }
-                      className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 mb-4"
+                      className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-4"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2">Page Title</label>
+                    <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Page Title</label>
                     <input
                       type="text"
                       value={websiteFormData.blog.title}
@@ -860,12 +883,12 @@ export default function AdminPanel() {
                             : null
                         )
                       }
-                      className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2">Description</label>
+                    <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Description</label>
                     <textarea
                       value={websiteFormData.blog.description}
                       onChange={(e) =>
@@ -875,7 +898,7 @@ export default function AdminPanel() {
                             : null
                         )
                       }
-                      className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       rows={3}
                     />
                   </div>
@@ -887,7 +910,7 @@ export default function AdminPanel() {
               <button
                 onClick={handleWebsiteContentSave}
                 disabled={loading}
-                className="bg-cyan-500 text-white px-8 py-3 rounded-full hover:bg-cyan-600 transition-colors font-medium disabled:opacity-50"
+                className="bg-cyan-500 dark:bg-cyan-600 text-white px-8 py-3 rounded-full hover:bg-cyan-600 dark:hover:bg-cyan-700 transition-colors font-medium disabled:opacity-50"
               >
                 {loading ? "Saving..." : "Save Changes"}
               </button>
@@ -896,7 +919,7 @@ export default function AdminPanel() {
                   setEditingWebsiteContent(false);
                   setWebsiteFormData(websiteContent);
                 }}
-                className="bg-gray-200 text-gray-700 px-8 py-3 rounded-full hover:bg-gray-300 transition-colors font-medium"
+                className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-8 py-3 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
               >
                 Cancel
               </button>
@@ -910,15 +933,16 @@ export default function AdminPanel() {
   // If editing or creating, show full-page editor
   if (isCreating || editingPost) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-rose-50 to-cyan-50 admin-panel">
+      <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-rose-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 admin-panel">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="mb-6 flex items-center justify-between">
-            <h1 className="text-4xl font-serif text-cyan-500">
+            <h1 className="text-4xl font-serif text-cyan-500 dark:text-cyan-400">
               {editingPost ? "Edit" : "Create"} {activeTab === "stories" ? "Story" : "Blog Post"}
             </h1>
+            <DarkModeToggle />
             <button
               onClick={handleCancel}
-              className="text-cyan-500 hover:text-cyan-600 transition-colors font-medium"
+              className="text-cyan-500 dark:text-cyan-400 hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors font-medium"
             >
               ← Back to List
             </button>
@@ -927,7 +951,7 @@ export default function AdminPanel() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-6">
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                   Title *
                 </label>
                 <input
@@ -936,13 +960,13 @@ export default function AdminPanel() {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, title: e.target.value }))
                   }
-                  className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                   Date *
                 </label>
                 <input
@@ -951,13 +975,13 @@ export default function AdminPanel() {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, date: e.target.value }))
                   }
-                  className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                   Excerpt (optional)
                 </label>
                 <textarea
@@ -965,20 +989,20 @@ export default function AdminPanel() {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, excerpt: e.target.value }))
                   }
-                  className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   rows={3}
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                   Featured Image (optional)
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
-                  className="w-full px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-2 border border-cyan-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   disabled={uploadingImage}
                 />
                 {uploadingImage && (
@@ -1007,7 +1031,7 @@ export default function AdminPanel() {
 
             {/* Rich Text Editor - Full Width */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2">
+              <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                 Content *
               </label>
               <RichTextEditor
@@ -1018,18 +1042,18 @@ export default function AdminPanel() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 pt-6 border-t border-cyan-200">
+            <div className="flex gap-4 pt-6 border-t border-cyan-200 dark:border-gray-600">
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-cyan-500 text-white px-8 py-3 rounded-full hover:bg-cyan-600 transition-colors font-medium disabled:opacity-50"
+                className="bg-cyan-500 dark:bg-cyan-600 text-white px-8 py-3 rounded-full hover:bg-cyan-600 dark:hover:bg-cyan-700 transition-colors font-medium disabled:opacity-50"
               >
                 {loading ? "Saving..." : "Save"}
               </button>
               <button
                 type="button"
                 onClick={handleCancel}
-                className="bg-gray-200 text-gray-700 px-8 py-3 rounded-full hover:bg-gray-300 transition-colors font-medium"
+                className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-8 py-3 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
               >
                 Cancel
               </button>
@@ -1042,22 +1066,23 @@ export default function AdminPanel() {
 
   // List view
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-rose-50 to-cyan-50 admin-panel">
+    <div className="min-h-screen bg-gradient-to-b from-cyan-100 via-rose-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 admin-panel">
       <main className="max-w-6xl mx-auto px-6 py-16">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-5xl font-serif text-cyan-500">Admin Panel</h1>
+          <h1 className="text-5xl font-serif text-cyan-500 dark:text-cyan-400">Admin Panel</h1>
+          <DarkModeToggle />
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-8 border-b border-cyan-100">
+        <div className="flex gap-4 mb-8 border-b border-cyan-100 dark:border-gray-700 dark:border-gray-700">
           <button
             onClick={() => {
               setActiveTab("stories");
             }}
             className={`px-6 py-3 font-medium transition-colors ${
               activeTab === "stories"
-                ? "text-cyan-500 border-b-2 border-cyan-500"
-                : "text-gray-600 hover:text-cyan-500"
+                ? "text-cyan-500 dark:text-cyan-400 border-b-2 border-cyan-500 dark:border-cyan-400"
+                : "text-gray-600 dark:text-gray-400 dark:text-gray-400 hover:text-cyan-500 dark:hover:text-cyan-400"
             }`}
           >
             Stories
@@ -1068,8 +1093,8 @@ export default function AdminPanel() {
             }}
             className={`px-6 py-3 font-medium transition-colors ${
               activeTab === "blogs"
-                ? "text-cyan-500 border-b-2 border-cyan-500"
-                : "text-gray-600 hover:text-cyan-500"
+                ? "text-cyan-500 dark:text-cyan-400 border-b-2 border-cyan-500 dark:border-cyan-400"
+                : "text-gray-600 dark:text-gray-400 dark:text-gray-400 hover:text-cyan-500 dark:hover:text-cyan-400"
             }`}
           >
             Blog Posts
@@ -1080,8 +1105,8 @@ export default function AdminPanel() {
             }}
             className={`px-6 py-3 font-medium transition-colors ${
               activeTab === "website"
-                ? "text-cyan-500 border-b-2 border-cyan-500"
-                : "text-gray-600 hover:text-cyan-500"
+                ? "text-cyan-500 dark:text-cyan-400 border-b-2 border-cyan-500 dark:border-cyan-400"
+                : "text-gray-600 dark:text-gray-400 dark:text-gray-400 hover:text-cyan-500 dark:hover:text-cyan-400"
             }`}
           >
             Website Content
@@ -1093,9 +1118,9 @@ export default function AdminPanel() {
             {websiteContent && (
               <>
                 {/* Home Page Section */}
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-cyan-100/50">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-cyan-100 dark:border-gray-700/50">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-serif text-gray-800">Home Page</h2>
+                    <h2 className="text-2xl font-serif text-gray-800 dark:text-white">Home Page</h2>
                     <button
                       onClick={() => {
                         setEditingWebsiteContent(true);
@@ -1107,7 +1132,7 @@ export default function AdminPanel() {
                       Edit
                     </button>
                   </div>
-                  <div className="space-y-2 text-gray-700">
+                  <div className="space-y-2 text-gray-700 dark:text-gray-300">
                     <div>
                       <strong>Navbar Title:</strong> {websiteContent.home.navbarTitle}
                     </div>
@@ -1121,9 +1146,9 @@ export default function AdminPanel() {
                 </div>
 
                 {/* About Page Section */}
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-cyan-100/50">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-cyan-100 dark:border-gray-700/50">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-serif text-gray-800">About Page</h2>
+                    <h2 className="text-2xl font-serif text-gray-800 dark:text-white">About Page</h2>
                     <button
                       onClick={() => {
                         setEditingWebsiteContent(true);
@@ -1135,7 +1160,7 @@ export default function AdminPanel() {
                       Edit
                     </button>
                   </div>
-                  <div className="space-y-2 text-gray-700">
+                  <div className="space-y-2 text-gray-700 dark:text-gray-300">
                     <div>
                       <strong>Navbar Title:</strong> {websiteContent.about.navbarTitle}
                     </div>
@@ -1152,9 +1177,9 @@ export default function AdminPanel() {
                 </div>
 
                 {/* Portfolio Page Section */}
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-cyan-100/50">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-cyan-100 dark:border-gray-700/50">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-serif text-gray-800">Portfolio Page</h2>
+                    <h2 className="text-2xl font-serif text-gray-800 dark:text-white">Portfolio Page</h2>
                     <button
                       onClick={() => {
                         setEditingWebsiteContent(true);
@@ -1166,7 +1191,7 @@ export default function AdminPanel() {
                       Edit
                     </button>
                   </div>
-                  <div className="space-y-2 text-gray-700">
+                  <div className="space-y-2 text-gray-700 dark:text-gray-300">
                     <div>
                       <strong>Navbar Title:</strong> {websiteContent.portfolio.navbarTitle}
                     </div>
@@ -1180,9 +1205,9 @@ export default function AdminPanel() {
                 </div>
 
                 {/* Blog Page Section */}
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-cyan-100/50">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-cyan-100 dark:border-gray-700/50">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-serif text-gray-800">Blog Page</h2>
+                    <h2 className="text-2xl font-serif text-gray-800 dark:text-white">Blog Page</h2>
                     <button
                       onClick={() => {
                         setEditingWebsiteContent(true);
@@ -1194,7 +1219,7 @@ export default function AdminPanel() {
                       Edit
                     </button>
                   </div>
-                  <div className="space-y-2 text-gray-700">
+                  <div className="space-y-2 text-gray-700 dark:text-gray-300">
                     <div>
                       <strong>Navbar Title:</strong> {websiteContent.blog.navbarTitle}
                     </div>
@@ -1214,7 +1239,7 @@ export default function AdminPanel() {
             <div className="mb-6">
               <button
                 onClick={handleCreate}
-                className="bg-cyan-500 text-white px-6 py-3 rounded-full hover:bg-cyan-600 transition-colors font-medium"
+                className="bg-cyan-500 dark:bg-cyan-600 text-white px-6 py-3 rounded-full hover:bg-cyan-600 dark:hover:bg-cyan-700 transition-colors font-medium"
               >
                 + New {activeTab === "stories" ? "Story" : "Post"}
               </button>
@@ -1224,7 +1249,7 @@ export default function AdminPanel() {
           {posts.map((post) => (
             <div
               key={post.slug}
-              className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-cyan-100/50 flex items-center gap-6"
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-cyan-100 dark:border-gray-700/50 flex items-center gap-6"
             >
               {post.image && (
                 <div className="flex-shrink-0">
@@ -1238,7 +1263,7 @@ export default function AdminPanel() {
                 </div>
               )}
               <div className="flex-1">
-                <h3 className="text-xl font-serif text-gray-800 mb-2">
+                <h3 className="text-xl font-serif text-gray-800 dark:text-white mb-2">
                   {post.title}
                 </h3>
                 <p className="text-sm text-cyan-500 mb-4">
@@ -1262,8 +1287,8 @@ export default function AdminPanel() {
             </div>
           ))}
           {posts.length === 0 && (
-            <div className="bg-gradient-to-br from-cyan-100/80 via-rose-50/80 to-cyan-50/80 backdrop-blur-sm rounded-xl p-8 text-center border border-cyan-200/50">
-              <p className="text-gray-600">No {activeTab} yet</p>
+            <div className="bg-gradient-to-br from-cyan-100/80 via-rose-50/80 to-cyan-50/80 dark:from-gray-800/80 dark:via-gray-700/80 dark:to-gray-800/80 backdrop-blur-sm rounded-xl p-8 text-center border border-cyan-200 dark:border-gray-600/50">
+              <p className="text-gray-600 dark:text-gray-400">No {activeTab} yet</p>
             </div>
           )}
             </div>

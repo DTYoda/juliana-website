@@ -68,7 +68,7 @@ export default function RichTextEditor({
     editorProps: {
       attributes: {
         class:
-          "prose prose-lg max-w-none min-h-[500px] p-6 focus:outline-none whitespace-pre-wrap",
+          "prose prose-lg dark:prose-invert max-w-none min-h-[500px] p-6 focus:outline-none whitespace-pre-wrap text-gray-900 dark:text-gray-100",
         style: "white-space: pre-wrap;",
       },
       handlePaste: (view, event) => {
@@ -139,16 +139,16 @@ export default function RichTextEditor({
   }
 
   return (
-    <div className="border border-cyan-200 rounded-lg bg-white">
+    <div className="border border-cyan-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
       {/* Toolbar */}
-      <div className="border-b border-cyan-200 p-3 flex gap-2 flex-wrap">
+      <div className="border-b border-cyan-200 dark:border-gray-600 p-3 flex gap-2 flex-wrap">
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
             editor.isActive("bold")
-              ? "bg-cyan-500 text-white"
-              : "bg-cyan-50 text-cyan-700 hover:bg-cyan-100"
+              ? "bg-cyan-500 dark:bg-cyan-600 text-white"
+              : "bg-cyan-50 dark:bg-gray-700 text-cyan-700 dark:text-gray-300 hover:bg-cyan-100 dark:hover:bg-gray-600"
           }`}
         >
           <strong>B</strong>
@@ -164,7 +164,7 @@ export default function RichTextEditor({
         >
           <em>I</em>
         </button>
-        <div className="w-px bg-cyan-200 mx-1" />
+        <div className="w-px bg-cyan-200 dark:bg-gray-600 mx-1" />
         <button
           type="button"
           onClick={() =>
@@ -204,7 +204,7 @@ export default function RichTextEditor({
         >
           H3
         </button>
-        <div className="w-px bg-cyan-200 mx-1" />
+        <div className="w-px bg-cyan-200 dark:bg-gray-600 mx-1" />
         <button
           type="button"
           onMouseDown={(e) => {
@@ -267,7 +267,7 @@ export default function RichTextEditor({
         >
           1.
         </button>
-        <div className="w-px bg-cyan-200 mx-1" />
+        <div className="w-px bg-cyan-200 dark:bg-gray-600 mx-1" />
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
@@ -282,14 +282,14 @@ export default function RichTextEditor({
         <button
           type="button"
           onClick={() => editor.chain().focus().setHorizontalRule().run()}
-          className="px-3 py-1.5 rounded text-sm font-medium bg-cyan-50 text-cyan-700 hover:bg-cyan-100 transition-colors"
+          className="px-3 py-1.5 rounded text-sm font-medium bg-cyan-50 dark:bg-gray-700 text-cyan-700 dark:text-gray-300 hover:bg-cyan-100 dark:hover:bg-gray-600 transition-colors"
         >
           ─
         </button>
       </div>
 
       {/* Editor */}
-      <div className="prose-wrapper">
+      <div className="prose-wrapper bg-white dark:bg-gray-800">
         <EditorContent editor={editor} />
       </div>
     </div>

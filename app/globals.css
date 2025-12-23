@@ -209,7 +209,7 @@ h6 {
 }
 
 .dark .ProseMirror p.is-editor-empty:first-child::before {
-  color: #525252;
+  color: #6b7280;
 }
 
 .ProseMirror h1 {
@@ -243,7 +243,15 @@ h6 {
 }
 
 .dark .ProseMirror p {
-  color: #ffffff;
+  color: #e5e5e5;
+}
+
+.ProseMirror {
+  color: #2d1b1a;
+}
+
+.dark .ProseMirror {
+  color: #e5e5e5;
 }
 
 .ProseMirror ul,
@@ -255,6 +263,11 @@ h6 {
 .ProseMirror li {
   margin-bottom: 0.5em;
   line-height: 1.8;
+  color: #2d1b1a;
+}
+
+.dark .ProseMirror li {
+  color: #e5e5e5;
 }
 
 .ProseMirror blockquote {

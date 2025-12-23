@@ -165,7 +165,7 @@ The website features a cozy, elegant design with:
 
 ## 🌐 Live Demo
 
-👉 **[View Live Website](https://your-website-url.vercel.app)**
+👉 **[View Live Website](https://julianakaras.com)**
 
 ---
 
@@ -210,10 +210,8 @@ Private project for personal use.
 
 ## 💬 Contact
 
-**Juliana Karas** - Writer & Storyteller
-
-- Website: [Your Website URL](https://your-website-url.vercel.app)
-- Email: [your-email@example.com](mailto:your-email@example.com)
+- Website: [haydenkaras.com](https://haydenkaras.com)
+- Email: [hkaras@andrew.cmu.edu](mailto:hkaras@andrew.cmu.edu)
 
 ---
 
